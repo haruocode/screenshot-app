@@ -10,15 +10,6 @@ if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir);
 }
 
-// function getNextFilename(): string {
-//   const files = fs.readdirSync(outputDir)
-//     .filter(f => f.endsWith('.jpg'))
-//     .sort();
-
-//   const last = files.length ? parseInt(files[files.length - 1].replace('.jpg', '')) : 0;
-//   return String(last + 1).padStart(3, '0') + '.jpg';
-// }
-
 function getNextFilename(): string {
   const files = fs.readdirSync(outputDir)
     .filter(f => f.endsWith('.jpg'))
