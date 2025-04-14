@@ -21,12 +21,19 @@ function getNextFilename(): string {
   return String(last + 1).padStart(3, '0') + '.jpg';
 }
 
-function cropImage(imagePath: string, region: { left: number, top: number, width: number, height: number }, outputPath: string) {
-  sharp(imagePath)
-    .extract(region)
-    .toFile(outputPath)
-    .then(() => console.log('Saved:', outputPath))
-    .catch(console.error);
+async function cropImage(imagePath: string, region: { left: number, top: number, width: number, height: number }, outputPath: string) {
+  try {
+    await sharp(imagePath)
+      .extract(region)
+      .toFile(outputPath);
+    console.log('Saved:', outputPath);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    fs.unlink(imagePath, (err) => {
+      if (err) console.error('Failed to delete temp file:', err);
+    });
+  }
 }
 
 export function captureRegion(side: 'main') {
