@@ -1,4 +1,4 @@
-const screenshotDesktop = require('screenshot-desktop') as any;
+const screenshotDesktop = require('screenshot-desktop');
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
@@ -36,14 +36,22 @@ async function cropImage(imagePath: string, region: { left: number, top: number,
   }
 }
 
-export function captureRegion(side: 'main') {
-  screenshotDesktop({ format: 'jpg' }).then((img: Buffer) => {
+export async function captureRegion(side: 'main') {
+  try {
+    const img = await screenshotDesktop();
     const tmpPath = path.join(outputDir, 'tmp.jpg');
     fs.writeFileSync(tmpPath, img);
 
     const region = regions[side];
+    if (!region) {
+      throw new Error(`指定された領域 "${side}" が見つかりません`);
+    }
+
     const filename = getNextFilename();
     const outputPath = path.join(outputDir, filename);
-    cropImage(tmpPath, region, outputPath);
-  });
+    await cropImage(tmpPath, region, outputPath);
+  } catch (error) {
+    console.error('スクリーンショットの撮影中にエラーが発生しました:', error);
+    throw error;
+  }
 }
